@@ -62,13 +62,17 @@
  - Chat GTP
  - HuggingFace
 ### Audio Transcript Converters
- - ???
+ - Use ffmpeg to normalize audio to wav mono 16 kHz
+ - Use Whisper via faster-whisper to generate a timestamped transcript
+ - Store transcript in DB as:
+   - full transcript text for reading and search
+   - timestamped segments for tap to text lookup
+ - Support transcript slice queries:
+   - given timestamp t, fetch transcript segments within +/- window seconds
 ### Database (SQL or JSON) - Nathan: 
  - Supabase
- - Neon
- - CloudFlare
- - GoogleCloud/Firebase
- - Schemas
+   - Why: PostgreSQL with real-time subscriptions, multi-platform SDKs, and integrated auth/storage. Best fit for relational data structure and tap analysis needs.
+ - Schemas (to be designed)
 ### Web Service (Prolong TS)
  - AWS?
  - Firebase?
