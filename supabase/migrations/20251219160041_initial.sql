@@ -16,16 +16,8 @@ CREATE TABLE scriptures (
     id SERIAL PRIMARY KEY,
     book TEXT NOT NULL,
     chapter TEXT NOT NULL,
-    verses JSONB NOT NULL,
-    url TEXT,
-
-    CONSTRAINT verses_is_int_array CHECK (
-        jsonb_typeof(verses) = 'array'
-        AND jsonb_path_match(
-            verses,
-            '$[*] ? (@.type() == "number" && @ like_regex "^[1-9][0-9]*$")'
-        )
-    )
+    verses JSONB NOT NULL, -- JSONB array of integers
+    url TEXT
 );
 
 -- =============================================================
