@@ -87,10 +87,3 @@
 
 ## Marketing
 ### How to get the word out?
-
-# Current Work
-|Teammate|Item|Deadline|
-|-|-|-|
-|Porter|Database Schemas|EOD - 12/18/25|
-|Nathan|Research which providers give us the largest free data storage possible|EOD - 12/18/25|
-|Josh|Start with iOS App|EOD - 12/27/25|
