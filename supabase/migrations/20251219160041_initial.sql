@@ -345,7 +345,7 @@ ON taps FOR DELETE
 USING ((SELECT auth.role()) = 'service_role');
 
 -- =========================
--- CONFIGURATIONS (FIXED)
+-- CONFIGURATIONS
 -- =========================
 
 -- Single SELECT policy
