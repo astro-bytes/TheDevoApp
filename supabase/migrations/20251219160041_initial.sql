@@ -189,7 +189,7 @@ ALTER TABLE log_errors ENABLE ROW LEVEL SECURITY;
 -- DEVOTIONALS
 -- =========================
 
-CREATE POLICY read_authenticated
+CREATE POLICY devotionals_read
 ON devotionals FOR SELECT
 USING (
     (SELECT auth.role()) IN ('authenticated', 'service_role')

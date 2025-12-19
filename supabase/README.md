@@ -101,5 +101,4 @@ erDiagram "PUBLIC SCHEMA"
     DEVOTIONALS ||--o{ QUOTES : ""
 
     LOG_EVENTS ||--o{ LOG_ERRORS : ""
-
 ```
