@@ -22,6 +22,7 @@ erDiagram "PUBLIC SCHEMA"
         string book
         string chapter
         json verses
+        string url
     }
 
     SPEAKERS {
@@ -34,6 +35,7 @@ erDiagram "PUBLIC SCHEMA"
 
     TAPS {
         int id PK
+        int anon_user_id FK
         int devotional_id FK
         datetime stamp
     }
@@ -42,7 +44,7 @@ erDiagram "PUBLIC SCHEMA"
         int id PK
         int devotional_id FK
         int like_count
-        int others_count
+        int tap_count
         string blob
     }
 
