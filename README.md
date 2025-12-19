@@ -32,7 +32,7 @@ Supabase is our applications backend. It will host our Backend API functions and
    Running `supabase start` will also start supabase and the db at the same time.  
    Use `supabase db reset` after making changes to `seed.sql` or adding a migration.  
 > **WARNING: Shut down supabase and docker before putting your computer to sleep**  
-> Sometimes if left open the application might not restart correctly because a port that shoudl be used to execute the container is being used and prevents the container from working correctly.
+> Sometimes if left open the application might not restart correctly because a port that should be used to execute the container is being used and prevents the container from working correctly.
     ```bash
     supabse db stop
     ```
