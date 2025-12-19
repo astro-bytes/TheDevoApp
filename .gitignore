@@ -1,1 +1,4 @@
-.temp/
+.DS_Store
+.build/
+.idea/
+.vscode/
