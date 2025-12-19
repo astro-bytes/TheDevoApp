@@ -348,7 +348,6 @@ USING ((SELECT auth.role()) = 'service_role');
 -- CONFIGURATIONS
 -- =========================
 
--- Single SELECT policy
 CREATE POLICY configs_read
 ON configurations FOR SELECT
 USING (
