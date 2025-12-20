@@ -1,34 +1,114 @@
 # Features
 ## Client Apps (Mobile, Web, Desktop, REST API)
-### Tap
- - Cache on device and pushed to DB after Devo
- - Should be dark themed
- - Take up the whole screen
- - Keep the phone on
-### Talk Details (Stretch)
-#### Summary of Talk
- - LLM Summary of talk from DB
+### Initial App Opened - Things that happen only once after installing the app
+
+### Initial App Load - Things that happen every time the app is opened with a new RAM Allocation
+1. Launches a Loading Screen whil refresh and launch of other systems occurs
+2. Launches Initial App Open if first time launch
+3. Refershes all Repositories
+4. Check Auth state
+5. Sends User to previous used tab (Maybe)
+
+### On App Background - Things that can happen just before app is backgrounded
+1. TBD
+
+### On App Foreground - Things that happen when the app is brought back to the foreground
+1. Refreshes Repositories
+
+### Splash Screen
+1. Appears at launch
+2. Moves into Loading view
+3. Loading view kicks off initial load
+
+### App Icon
+1. Use Figma to design the icon
+2. Export the as cvgs or pngs
+3. Use Icon Composer to create an App Icon from cvgs or pngs
+
+### Dependency Injection Container
+1. Integrate with Astroject
+2. Singleton instance so that it is accessable everywhere
+
+### Test Settings Page
+1. Integrate with AstroFramework
+2. Make visible only on Debug builds
+
+### Connect to Supabase
+1. Integrate Supabase Swift Package
+2. Use the right Anon Key to access
+3. Point to production when in release build vs point to local instance when in debug build with the option to point to production if desired
+
+### Authentication
+1. Connect to Supabase DB Instance
+2. Sign In Anonymously
+3. If already signed in do not sign in again anonymously
+4. Store User Data via Repository
+
+### Tap View
+1. Tap Anywher on the screen
+2. Low lighting - dark dark mode
+3. Keep Screen on
+4. Connect to Supabase DB Local Instance
+5. Store Taps Locally
+6. Get User Anon ID
+7. Offload Taps to Supabase DB after devo is over
+
+### Devotional List
+1. List Devotionals past and present
+2. Filter By Selection - Possibly the same as search
+   1. Topics
+   2. Speakers
+   3. Institution
+3. Sort by
+   1. Topics
+   2. Speakers
+   3. Institution
+   4. Date
+4. Search Bar
+   1. Speaker
+   2. Institution
+   3. Topic
+5. Refreshable List
+6. Launch Details of any 1 devotional
+7. Batch Loading
+
+### Devotional Details
+1. Speaker
+   1. Image
+   2. Name
+   3. Occupation
+2. Summary
+3. Transcript
+4. Video
+5. Topic(s)
+6. Date & Time
+7. Quotes List
+
+### Devotional Quotes List w/ Most Recent at top of the list
+1. Quote Transcript
+2. Speaker
+3. Date
+4. Link to devotional Details
+5. Likes
+6. Count of likes in live - The number of taps received live durint the original devotional
+7. Refreshable - Active pulling or listening?
+8. Batch Loading
+
+### Theme
+1. Design Application Theme colors 
+2. Design Button styles
+
+### STRETCH
 #### Transcript of the Talk with User Notes (Stretch)
-#### List Quotes from Talk
- - Active Pulling (check every 1 for updates from the DB on Quotes)
-### List Previous Talks
- - Searchable
- - Filterable
- - Sortable
-### Connect to DB
- - Read
- - Write
- - Update?
- - Delete?
-### Make Service Requests & Cache Data (Stretch)
+#### Make Service Requests & Cache Data (Stretch)
  - Personalized analytics on YTD Devotionals
-### Interact with Quotes (Stretch)
-### Note taking (Stretch)
-### Multi-Lingual Translations (Stretch)
-### Attendence Streak (Stretch)
+#### Interact with Quotes (Stretch)
+#### Note taking (Stretch)
+#### Multi-Lingual Translations (Stretch)
+#### Attendence Streak (Stretch)
  - You were there in person
  - Geo Location
-### Participation Streak (Stretch)
+#### Participation Streak (Stretch)
  - You Tapped or at least had the app open during devo
  - Applicaiton State
 
