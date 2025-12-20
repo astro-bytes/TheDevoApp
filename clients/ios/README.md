@@ -14,13 +14,13 @@ You must have an apple developer account enorder to build the app to the simulat
 ## Xcode 
 We need to be using the same version of xcode other wise we end up running into build errors from one machine to another.
 
-|Current Version|26|
+|Current Version|26.1.1|
 |-|-|
 
 ### Install Xcodes: Xcode Management App (NOT to be confused with Xcode)
 1. Run the following in the terminal
    ```bash
-   brew install xcodes
+   brew install --cask xcodes
    ```
 2. Open Xcodes
 3. Login via settings using your Apple Account
@@ -32,4 +32,6 @@ We need to be using the same version of xcode other wise we end up running into 
 ## Running the App 
 For now we will focus on using just simulators. Physical devices make things complicated when working with more than one person on a project.
 
-<!-- TODO: Fill out the steps to do this as part of setting up an empty project -->
+1. Open `clients/ios/TheDevoApp.xcodeproj` with Xcode
+2. Select a iPhone Simulator
+3. Press Play Button
