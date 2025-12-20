@@ -6,7 +6,7 @@ You are expected to already have installed the following:
 ### Supabase Setup
 Supabase is our applications backend. It will host our Backend API functions and Database.
 
-1. Open a shell in the supabase directory
+1. Open a shell in the root directory
 2. Install the Supabase CLI
    ```bash
    brew install supabase
@@ -25,12 +25,14 @@ Supabase is our applications backend. It will host our Backend API functions and
    ```bash
    supabase db pull
    ```
-8. Start supabase db local instance
+8. Start supabase local instance
    ```bash
-   supabase db start
+   supabase start
    ```
+   Running `supabase start` will also start supabase and the db at the same time.  
+   Use `supabase db reset` after making changes to `seed.sql` or adding a migration.  
 > **WARNING: Shut down supabase and docker before putting your computer to sleep**  
-> Sometimes if left open the application might not restart correctly because a port that shoudl be used to execute the container is being used and prevents the container from working correctly.
+> Sometimes if left open the application might not restart correctly because a port that should be used to execute the container is being used and prevents the container from working correctly.
     ```bash
     supabse db stop
     ```
