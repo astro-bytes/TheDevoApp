@@ -18,7 +18,7 @@ TODO
 TODO
 
 ### Run the App
-1. Open Android Stuido and go through the setup up process
+1. Open Android Studio and go through the setup up process
 2. Open TheDevoApp in Android Studio
 3. Copy the contents of the `example.properties` into a new file called `debug.properties` at `/clients/android/`
 4. If not started Start Supabase Local Instance. [See](../../README.md#supabase-setup) for how to setup Supabase.
