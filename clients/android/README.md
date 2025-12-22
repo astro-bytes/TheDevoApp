@@ -36,5 +36,5 @@ TODO
 |-|-|-|
 |[Hilt](https://developer.android.com/training/dependency-injection/hilt-android)|2.57.2|Dependency Injection Framework|
 |[Supabase](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://supabase.com/docs/guides/getting-started/quickstarts/kotlin&ved=2ahUKEwiW9rGwgtKRAxXVFTQIHfJ6NdcQmuEJegQIGBAB&usg=AOvVaw1ds-esArYbXK1u8T9D65XJ)||Database & Service|
-|[Kotlin](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://kotlinlang.org/docs/home.html&ved=2ahUKEwjNhuupgtKRAxUHDjQIHVwvCj4QFnoECBAQAQ&usg=AOvVaw0CN1eu52oohX1ehvFclHLc)|2.2.0|Langauge|
+|[Kotlin](https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://kotlinlang.org/docs/home.html&ved=2ahUKEwjNhuupgtKRAxUHDjQIHVwvCj4QFnoECBAQAQ&usg=AOvVaw0CN1eu52oohX1ehvFclHLc)|2.2.0|Language|
 |[Serialization](https://kotlinlang.org/docs/serialization.html)||Encoding & Decoding of Objects|
