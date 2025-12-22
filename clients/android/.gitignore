@@ -13,3 +13,6 @@
 .externalNativeBuild
 .cxx
 *.properties
+
+# Do not ignore
+!example.properties
