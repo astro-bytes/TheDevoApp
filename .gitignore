@@ -2,6 +2,3 @@
 .build/
 .idea/
 .vscode/
-
-# TEMP UNTIL ANDROID IS READY
-clients/android/
