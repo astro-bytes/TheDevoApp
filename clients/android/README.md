@@ -26,7 +26,7 @@ TODO
    1. set `SUPABASE_URL` = `Project URL` API 
    2. set `SUPABASE_KEY` = `Publishable` Authentication Key
    > **NOTE:** You can find these values in the terminal after running `supabase start` or using `supabase status` when already running.
-6. Sync the gradel
+6. Sync the gradle
 7. Run a clean build of the project
 8. Select your destination (e.i simulator you have installed or a physical device)
 9. Press the play button & watch the magic work
