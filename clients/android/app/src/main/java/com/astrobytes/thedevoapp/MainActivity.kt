@@ -4,15 +4,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,6 +33,7 @@ import com.astrobytes.thedevoapp.authentication.AuthState
 import com.astrobytes.thedevoapp.models.User
 import com.astrobytes.thedevoapp.repositories.UserRepository
 import com.astrobytes.thedevoapp.ui.theme.TheDevoAppTheme
+import com.astrobytes.thedevoapp.usecases.RecordTap
 import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
@@ -42,8 +45,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-    private val viewModel: MainViewModel by viewModels()
+    @Inject
+    lateinit var model: MainViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +60,16 @@ class MainActivity : ComponentActivity() {
                             .padding(innerPadding),
                         contentAlignment = Alignment.Center
                     ) {
-                        Information(viewModel)
+                        Information(model)
+                        RecordTap(
+                            onTap = {
+                                println("Started")
+                                model.onButtonTapped()
+                                println("Finished")
+                                    },
+                            error = model.errorMessage,
+                            modifier = Modifier.padding(innerPadding)
+                        )
                     }
                 }
             }
@@ -97,7 +109,8 @@ fun Information(viewModel: MainViewModel) {
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authProvider: AuthProvider,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val recordTap: RecordTap
 ) : ViewModel() {
 
     val authState: StateFlow<AuthState> = authProvider.value.stateIn(
@@ -124,6 +137,7 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
     fun logout() {
         viewModelScope.launch {
             try {
@@ -135,7 +149,46 @@ class MainViewModel @Inject constructor(
         }
     }
 
+    fun onButtonTapped() {
+        viewModelScope.launch {
+            try {
+                clearErrorMessage()
+                recordTap.execute(1)
+            } catch (e: Exception) {
+                errorMessage = e.message ?: "Unknown error occurred"
+            }
+        }
+    }
+
     fun clearErrorMessage() {
         errorMessage = null
+    }
+}
+
+@Composable
+fun RecordTap(
+    onTap: () -> Unit,
+    error: String?,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+            Button(onClick = onTap) {
+                Text("Record a Tap")
+            }
+
+            if (error != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
     }
 }
