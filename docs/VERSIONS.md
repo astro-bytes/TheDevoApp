@@ -7,4 +7,4 @@
 |xcodes|2.3.0|xcode software management|
 |docker|4.22.1|running local instances in containers|
 |git|2.50.1|software versioning|
-|fastlanes||mobile software deployment|
+|fastlane|2.221.1|mobile software deployment|
