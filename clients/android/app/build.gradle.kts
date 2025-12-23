@@ -1,12 +1,23 @@
+import org.jetbrains.kotlin.konan.properties.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 
+    // Serialization
+    alias(libs.plugins.kotlin.serialization)
+
     // Hilt
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.kapt)
 }
+
+val envProps = Properties()
+val envFile = rootProject.file(
+    if (project.hasProperty("prod")) "prod.properties" else "debug.properties"
+)
+envProps.load(envFile.inputStream())
 
 android {
     namespace = "com.astrobytes.thedevoapp"
@@ -22,15 +33,28 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SUPABASE_URL", envProps["SUPABASE_URL"].toString())
+        buildConfigField("String", "SUPABASE_KEY", envProps["SUPABASE_KEY"].toString())
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEV"
             isMinifyEnabled = false
+
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
     compileOptions {
@@ -42,6 +66,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -62,7 +87,14 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
+    // Supabase
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.realtime)
+    implementation(libs.ktor.client.android)
+
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }
