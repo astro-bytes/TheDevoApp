@@ -9,7 +9,7 @@ import javax.inject.Inject
 class SupabaseUserStore @Inject constructor(private val client: SupabaseClient): UserStore {
     override suspend fun fetch(): Result<User> = runCatching {
         val user = client.auth.currentUserOrNull()
-            ?: throw IllegalStateException("User is not Logged in")
+            ?: throw IllegalStateException("User is not logged in")
         User(user.id)
     }
 }
