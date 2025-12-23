@@ -1,4 +1,4 @@
-package com.astrobytes.thedevoapp.stores.core
+package com.astrobytes.thedevoapp.stores
 
 import com.astrobytes.thedevoapp.models.User
 
