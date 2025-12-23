@@ -3,7 +3,7 @@ package com.astrobytes.thedevoapp.repositories.core
 import com.astrobytes.thedevoapp.models.User
 import com.astrobytes.thedevoapp.repositories.CoreRepository
 import com.astrobytes.thedevoapp.repositories.UserRepository
-import com.astrobytes.thedevoapp.stores.core.UserStore
+import com.astrobytes.thedevoapp.stores.UserStore
 import javax.inject.Inject
 
 class CoreUserRepository @Inject constructor(

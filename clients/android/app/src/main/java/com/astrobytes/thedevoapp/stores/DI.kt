@@ -1,7 +1,7 @@
 package com.astrobytes.thedevoapp.stores
 
 import com.astrobytes.thedevoapp.stores.core.SupabaseUserStore
-import com.astrobytes.thedevoapp.stores.core.UserStore
+import com.astrobytes.thedevoapp.stores.UserStore
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
