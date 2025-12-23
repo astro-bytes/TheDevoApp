@@ -1,6 +1,7 @@
 package com.astrobytes.thedevoapp.repositories
 
 import androidx.annotation.CheckResult
+import com.astrobytes.thedevoapp.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -94,3 +95,5 @@ abstract class CoreRepository<Value> : Repository<Value> {
     // Subclasses must implement how to fetch
     abstract override suspend fun refresh(): Result<Value>
 }
+
+interface UserRepository : Repository<User>
