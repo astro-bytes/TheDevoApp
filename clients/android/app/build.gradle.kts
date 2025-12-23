@@ -6,21 +6,18 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 
     // Serialization
-    kotlin("plugin.serialization") version "1.9.22"
+    alias(libs.plugins.kotlin.serialization)
 
     // Hilt
-    id("kotlin-kapt")
-    id("com.google.dagger.hilt.android")
+    alias(libs.plugins.hilt)
+    alias(libs.plugins.kotlin.kapt)
 }
 
-// Load the *.properties file
-val properties = Properties()
-val propertiesFile = rootProject.file("debug.properties")
-if (propertiesFile.exists()) {
-    properties.load(propertiesFile.inputStream())
-} else {
-    println("WARNING: debug.properties file not found!")
-}
+val envProps = Properties()
+val envFile = rootProject.file(
+    if (project.hasProperty("prod")) "prod.properties" else "debug.properties"
+)
+envProps.load(envFile.inputStream())
 
 android {
     namespace = "com.astrobytes.thedevoapp"
@@ -37,17 +34,27 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "SUPABASE_URL", properties.getProperty("SUPABASE_URL"))
-        buildConfigField("String", "SUPABASE_KEY", properties.getProperty("SUPABASE_KEY"))
+        buildConfigField("String", "SUPABASE_URL", envProps["SUPABASE_URL"].toString())
+        buildConfigField("String", "SUPABASE_KEY", envProps["SUPABASE_KEY"].toString())
     }
 
     buildTypes {
-        release {
+        getByName("debug") {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-DEV"
             isMinifyEnabled = false
+
+            manifestPlaceholders["usesCleartextTraffic"] = "true"
+        }
+
+        getByName("release") {
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            manifestPlaceholders["usesCleartextTraffic"] = "false"
         }
     }
     compileOptions {
@@ -80,13 +87,14 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
-    implementation(platform("io.github.jan-tennert.supabase:bom:3.2.6"))
-    implementation("io.github.jan-tennert.supabase:postgrest-kt")
-    implementation("io.github.jan-tennert.supabase:auth-kt")
-    implementation("io.github.jan-tennert.supabase:realtime-kt")
-    implementation("io.ktor:ktor-client-android:3.3.3")
+    // Supabase
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.realtime)
+    implementation(libs.ktor.client.android)
 
     // Hilt
-    implementation("com.google.dagger:hilt-android:2.57.2")
-    kapt("com.google.dagger:hilt-android-compiler:2.57.2")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
 }
