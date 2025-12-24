@@ -7,13 +7,10 @@ import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.status.SessionStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,10 +21,10 @@ enum class AuthState {
 }
 
 interface AuthProvider {
-    val state: Flow<AuthState>
-    suspend fun login(): Result<Unit>
-    suspend fun logout(): Result<Unit>
-    fun currentState(): AuthState
+    val value: Flow<AuthState>
+    fun current() : AuthState
+    suspend fun login()
+    suspend fun logout()
 }
 
 class SupabaseAuthProvider @Inject constructor(
@@ -36,8 +33,8 @@ class SupabaseAuthProvider @Inject constructor(
     @ApplicationScope private val scope: CoroutineScope
 ) : AuthProvider {
 
-    private val _state = MutableStateFlow<AuthState>(AuthState.NotAuthenticated)
-    override val state: StateFlow<AuthState> = _state.asStateFlow()
+    private val state = MutableStateFlow<AuthState>(AuthState.NotAuthenticated)
+    override val value: Flow<AuthState> = state.asStateFlow()
 
     init {
         observeAuthState()
@@ -57,43 +54,49 @@ class SupabaseAuthProvider @Inject constructor(
                             AuthState.NotAuthenticated
 
                         else ->
-                            _state.value // ignore transient states
+                            state.value // ignore transient states
                     }
                 }
                 .distinctUntilChanged()
                 .collect { newState ->
-                    _state.value = newState
+                    state.value = newState
                 }
         }
     }
 
     private fun observeUserLifecycle() {
         scope.launch(Dispatchers.IO) {
-            state
-                .collect { authState ->
-                    when (authState) {
-                        AuthState.Authenticated ->
-                            userRepository.refresh()
+            var lastAuthState: AuthState? = null
 
-                        AuthState.NotAuthenticated ->
+            state.collect { authState ->
+                if (authState != lastAuthState) {
+                    when (authState) {
+                        AuthState.Authenticated -> {
+                            userRepository.refresh()
+                        }
+                        AuthState.NotAuthenticated -> {
                             userRepository.clear()
+                        }
                     }
+                    lastAuthState = authState
                 }
+            }
         }
     }
 
-    override suspend fun login(): Result<Unit> =
-        runCatching {
-            if (state.value == AuthState.NotAuthenticated) {
-                client.auth.signInAnonymously()
-            }
-        }
 
-    override suspend fun logout(): Result<Unit> =
-        runCatching {
+    override suspend fun login() {
+        if (state.value == AuthState.NotAuthenticated) {
+            client.auth.signInAnonymously()
+        }
+    }
+
+    override suspend fun logout() {
+        // TODO: Delete the user.
+        if (state.value == AuthState.Authenticated) {
             client.auth.signOut()
         }
+    }
 
-    override fun currentState(): AuthState =
-        state.value
+    override fun current(): AuthState = state.value
 }
