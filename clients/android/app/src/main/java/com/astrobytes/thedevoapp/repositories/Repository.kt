@@ -1,12 +1,14 @@
 package com.astrobytes.thedevoapp.repositories
 
 import androidx.annotation.CheckResult
+import androidx.compose.runtime.collectAsState
 import com.astrobytes.thedevoapp.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.update
 
@@ -40,7 +42,7 @@ interface Repository<Value> {
      * or [Result.failure] when no value is available or an error occurred.
      */
     @CheckResult
-    fun current(): Result<Value>
+    fun current(): Value
     /**
      * Refreshes the underlying data and updates the repository state.
      *
@@ -50,7 +52,7 @@ interface Repository<Value> {
      * @return [Result.success] with the freshly loaded value, or [Result.failure]
      * when the refresh fails.
      */
-    suspend fun refresh(): Result<Value>
+    suspend fun refresh(): Value
     /**
      * Clears the currently held value and any in-memory state.
      *
@@ -76,24 +78,18 @@ interface Repository<Value> {
  * The internal [CoroutineScope] uses [Dispatchers.IO] with a [SupervisorJob]
  * and is intended for use by subclasses to launch background work if needed.
  */
-abstract class CoreRepository<Value> : Repository<Value> {
-    protected val _value = MutableStateFlow<Value?>(null)
-    override val value: Flow<Value> = _value.filterNotNull()
+abstract class CoreRepository<Value>(initialValue: Value) : Repository<Value> {
+    protected val _value = MutableStateFlow<Value>(initialValue)
+    override val value: Flow<Value> = _value.asStateFlow()
 
-    override fun current(): Result<Value> =
-        _value.value?.let { Result.success(it) }
-            ?: Result.failure(
-                IllegalStateException(
-                    "Value not loaded for repository ${this::class.java.simpleName}"
-                )
-            )
-
-    override fun clear() {
-        _value.update { null }
+    override fun current(): Value {
+        return _value.value
     }
 
+    abstract override fun clear()
+
     // Subclasses must implement how to fetch
-    abstract override suspend fun refresh(): Result<Value>
+    abstract override suspend fun refresh(): Value
 }
 
-interface UserRepository : Repository<User>
+interface UserRepository : Repository<User?>

@@ -7,9 +7,9 @@ import com.astrobytes.thedevoapp.stores.UserStore
 import javax.inject.Inject
 
 class SupabaseUserStore @Inject constructor(private val client: SupabaseClient): UserStore {
-    override suspend fun fetch(): Result<User> = runCatching {
+    override suspend fun fetch(): User? {
         val user = client.auth.currentUserOrNull()
-            ?: throw IllegalStateException("User is not logged in")
-        User(user.id)
+        user?.let { return User(it.id) }
+        return null
     }
 }
