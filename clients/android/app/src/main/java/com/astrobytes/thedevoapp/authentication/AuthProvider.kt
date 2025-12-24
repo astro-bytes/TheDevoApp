@@ -52,9 +52,8 @@ class SupabaseAuthProvider @Inject constructor(
                         is SessionStatus.RefreshFailure,
                         is SessionStatus.NotAuthenticated ->
                             AuthState.NotAuthenticated
-
-                        else ->
-                            state.value // ignore transient states
+                        is SessionStatus.Initializing ->
+                            state.value
                     }
                 }
                 .distinctUntilChanged()
@@ -92,8 +91,12 @@ class SupabaseAuthProvider @Inject constructor(
     }
 
     override suspend fun logout() {
-        // TODO: Delete the user.
         if (state.value == AuthState.Authenticated) {
+            // TODO: Call Edge function to delete user
+//            val user = userRepository.current()
+//            user?.let {
+//                client.auth.admin.deleteUser(it.id)
+//            }
             client.auth.signOut()
         }
     }
