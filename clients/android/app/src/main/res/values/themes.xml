@@ -2,4 +2,9 @@
 <resources>
 
     <style name="Theme.TheDevoApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.TheDevoApp.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/black</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_placeholder</item>
+        <item name="postSplashScreenTheme">@style/Theme.TheDevoApp</item>
+    </style>
 </resources>

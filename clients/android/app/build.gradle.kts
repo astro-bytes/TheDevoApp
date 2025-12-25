@@ -98,4 +98,7 @@ dependencies {
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
+
+    // Splashscreen
+    implementation(libs.androidx.splashscreen)
 }

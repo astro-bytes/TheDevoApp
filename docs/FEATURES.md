@@ -20,13 +20,15 @@
 2. Moves into Loading view
 3. Loading view kicks off initial load
 
+- [Android documentation](https://developer.android.com/develop/ui/views/launch/splash-screen)
+
 ### App Icon
 1. Use Figma to design the icon
 2. Export the as cvgs or pngs
 3. Use Icon Composer to create an App Icon from cvgs or pngs
 
 ### Dependency Injection Container
-1. Integrate with Astroject
+1. Integrate with Astroject (iOS) or Dagger (Android)
 2. Singleton instance so that it is accessable everywhere
 
 ### Test Settings Page

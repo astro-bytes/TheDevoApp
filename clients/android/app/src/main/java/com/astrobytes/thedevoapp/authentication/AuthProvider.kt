@@ -17,7 +17,8 @@ import javax.inject.Inject
 
 enum class AuthState {
     Authenticated,
-    NotAuthenticated
+    NotAuthenticated,
+    Initializing
 }
 
 interface AuthProvider {
@@ -33,7 +34,7 @@ class SupabaseAuthProvider @Inject constructor(
     @ApplicationScope private val scope: CoroutineScope
 ) : AuthProvider {
 
-    private val state = MutableStateFlow<AuthState>(AuthState.NotAuthenticated)
+    private val state = MutableStateFlow<AuthState>(AuthState.Initializing)
     override val value: Flow<AuthState> = state.asStateFlow()
 
     init {
@@ -53,7 +54,7 @@ class SupabaseAuthProvider @Inject constructor(
                         is SessionStatus.NotAuthenticated ->
                             AuthState.NotAuthenticated
                         is SessionStatus.Initializing ->
-                            state.value
+                            AuthState.Initializing
                     }
                 }
                 .distinctUntilChanged()
@@ -70,12 +71,9 @@ class SupabaseAuthProvider @Inject constructor(
             state.collect { authState ->
                 if (authState != lastAuthState) {
                     when (authState) {
-                        AuthState.Authenticated -> {
-                            userRepository.refresh()
-                        }
-                        AuthState.NotAuthenticated -> {
-                            userRepository.clear()
-                        }
+                        AuthState.Authenticated -> userRepository.refresh()
+                        AuthState.NotAuthenticated -> userRepository.clear()
+                        AuthState.Initializing -> Unit
                     }
                     lastAuthState = authState
                 }
