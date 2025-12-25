@@ -1,6 +1,7 @@
 package com.astrobytes.thedevoapp.stores.core
 
 import com.astrobytes.thedevoapp.models.Tap
+import com.astrobytes.thedevoapp.stores.TapStore
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.from
 import kotlinx.serialization.SerialName
@@ -20,7 +21,7 @@ class SupabaseTapStore @Inject constructor(private val client: SupabaseClient): 
         constructor(tap: Tap) : this(tap.userId, tap.devotionalId, tap.timestamp)
     }
 
-    override suspend fun put(tap: Tap): Result<Unit> = runCatching {
+    override suspend fun put(tap: Tap): Unit {
         client.from("taps").insert(SupabaseTap(tap))
     }
 }

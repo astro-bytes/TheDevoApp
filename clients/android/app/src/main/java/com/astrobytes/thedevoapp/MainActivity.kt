@@ -26,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.astrobytes.thedevoapp.authentication.AuthProvider
@@ -45,9 +46,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @Inject
-    lateinit var model: MainViewModel
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,24 +55,29 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding),
-                        contentAlignment = Alignment.Center
+                            .padding(innerPadding)
                     ) {
-                        Information(model)
-                        RecordTap(
-                            onTap = {
-                                println("Started")
-                                model.onButtonTapped()
-                                println("Finished")
-                                    },
-                            error = model.errorMessage,
-                            modifier = Modifier.padding(innerPadding)
-                        )
+                        MainView()
                     }
                 }
             }
         }
     }
+}
+
+
+@Composable
+fun MainView() {
+    val model: MainViewModel = hiltViewModel()
+    Information(model)
+    RecordTap(
+        onTap = {
+            println("Started")
+            model.onButtonTapped()
+            println("Finished")
+        },
+        error = model.errorMessage
+    )
 }
 
 @Composable
@@ -83,7 +86,7 @@ fun Information(viewModel: MainViewModel) {
     val user by viewModel.userState.collectAsState()
 
     Column(modifier = Modifier.padding(8.dp)) {
-        Text("Auth State: ${auth}")
+        Text("Auth State: $auth")
         Text("User: ${user?.id ?: "No user"}")
         Text("SUPABASE URL: ${BuildConfig.SUPABASE_URL}")
         Text("SUPABASE KEY:${BuildConfig.SUPABASE_KEY}")
@@ -106,10 +109,38 @@ fun Information(viewModel: MainViewModel) {
     }
 }
 
+@Composable
+fun RecordTap(
+    onTap: () -> Unit,
+    error: String?,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+
+            Button(onClick = onTap) {
+                Text("Record a Tap")
+            }
+
+            if (error != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Text(
+                    text = error,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
+        }
+    }
+}
+
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val authProvider: AuthProvider,
-    private val userRepository: UserRepository,
+    userRepository: UserRepository,
     private val recordTap: RecordTap
 ) : ViewModel() {
 
@@ -162,33 +193,5 @@ class MainViewModel @Inject constructor(
 
     fun clearErrorMessage() {
         errorMessage = null
-    }
-}
-
-@Composable
-fun RecordTap(
-    onTap: () -> Unit,
-    error: String?,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-
-            Button(onClick = onTap) {
-                Text("Record a Tap")
-            }
-
-            if (error != null) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = error,
-                    color = MaterialTheme.colorScheme.error
-                )
-            }
-        }
     }
 }
