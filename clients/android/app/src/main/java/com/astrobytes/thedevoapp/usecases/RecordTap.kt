@@ -8,11 +8,9 @@ import kotlin.time.ExperimentalTime
 
 class RecordTap @Inject constructor(private val tapStore: TapStore, private val userRepo: UserRepository) {
     @OptIn(ExperimentalTime::class)
-    suspend fun execute(devotionalId: Int): Result<Unit> = runCatching {
-        val user = userRepo.current()
-        val id = -1
-        user?.let {
-            val tap = Tap(id, devotionalId, it.id)
+    suspend fun execute(devotionalId: Int) {
+        userRepo.current()?.let {
+            val tap = Tap(-1, devotionalId, it.id)
             tapStore.put(tap)
         }
     }

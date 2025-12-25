@@ -52,40 +52,33 @@ class MainActivity : ComponentActivity() {
         setContent {
             TheDevoAppTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                    ) {
-                        MainView()
-                    }
+                    MainView(Modifier.padding(innerPadding))
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun MainView() {
-    val model: MainViewModel = hiltViewModel()
-    Information(model)
-    RecordTap(
-        onTap = {
-            println("Started")
-            model.onButtonTapped()
-            println("Finished")
-        },
-        error = model.errorMessage
-    )
+fun MainView(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+    ) {
+        Information()
+        RecordTapView()
+    }
 }
 
 @Composable
-fun Information(viewModel: MainViewModel) {
-    val auth by viewModel.authState.collectAsState()
-    val user by viewModel.userState.collectAsState()
+fun Information(
+    modifier: Modifier = Modifier
+) {
+    val model: InformationViewModel = hiltViewModel()
 
-    Column(modifier = Modifier.padding(8.dp)) {
+    val auth by model.authState.collectAsState()
+    val user by model.userState.collectAsState()
+
+    Column(modifier = modifier.padding(8.dp)) {
         Text("Auth State: $auth")
         Text("User: ${user?.id ?: "No user"}")
         Text("SUPABASE URL: ${BuildConfig.SUPABASE_URL}")
@@ -95,41 +88,41 @@ fun Information(viewModel: MainViewModel) {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)
         ) {
-            Button({ viewModel.login() }) {
+            Button(model::login) {
                 Text("Login")
             }
-            Button({ viewModel.logout() }) {
+            Button(model::logout) {
                 Text("Logout")
             }
         }
 
-        viewModel.errorMessage?.let {
+        model.errorMessage?.let {
             Text(text = it, color = Color.Red)
         }
     }
 }
 
 @Composable
-fun RecordTap(
-    onTap: () -> Unit,
-    error: String?,
+fun RecordTapView(
     modifier: Modifier = Modifier
 ) {
+    val model: RecordTapModel = hiltViewModel()
+
     Box(
         modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-            Button(onClick = onTap) {
+            Button(model::onButtonTapped) {
                 Text("Record a Tap")
             }
 
-            if (error != null) {
+            model.errorMessage?.let {
                 Spacer(modifier = Modifier.height(16.dp))
 
                 Text(
-                    text = error,
+                    text = it,
                     color = MaterialTheme.colorScheme.error
                 )
             }
@@ -138,10 +131,9 @@ fun RecordTap(
 }
 
 @HiltViewModel
-class MainViewModel @Inject constructor(
+class InformationViewModel @Inject constructor(
     private val authProvider: AuthProvider,
-    userRepository: UserRepository,
-    private val recordTap: RecordTap
+    userRepository: UserRepository
 ) : ViewModel() {
 
     val authState: StateFlow<AuthState> = authProvider.value.stateIn(
@@ -179,6 +171,17 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun clearErrorMessage() {
+        errorMessage = null
+    }
+}
+
+@HiltViewModel
+class RecordTapModel @Inject constructor(
+    private val recordTap: RecordTap
+): ViewModel() {
+    var errorMessage: String? by mutableStateOf(null)
 
     fun onButtonTapped() {
         viewModelScope.launch {
