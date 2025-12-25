@@ -9,9 +9,12 @@ import javax.inject.Inject
 
 class OnAppLaunch @Inject constructor(
     private val authProvider: AuthProvider,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val onInitialAppLaunch: OnInitialAppLaunch
 ) {
     suspend fun execute() {
+        onInitialAppLaunch.execute()
+
         // Wait until authProvider.value emits Authenticated
         authProvider.value
             .filter { it != AuthState.Initializing } // skip initializing
