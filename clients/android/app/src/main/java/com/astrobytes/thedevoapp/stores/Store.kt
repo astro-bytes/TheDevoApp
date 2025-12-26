@@ -15,7 +15,6 @@ interface UserStore {
 }
 
 interface DevotionalStore {
-    suspend fun fetch(id: Int): Devotional?
     @OptIn(ExperimentalTime::class)
     suspend fun fetch(instant: Instant): Devotional?
     suspend fun fetch(): List<Devotional>

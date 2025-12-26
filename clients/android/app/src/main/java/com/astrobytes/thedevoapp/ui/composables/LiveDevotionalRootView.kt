@@ -34,9 +34,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Composable
-fun TapView(
+fun LiveDevotionalRootView(
     modifier: Modifier = Modifier,
-    model: TapViewModel = hiltViewModel()
+    model: LiveDevotionalRootViewModel = hiltViewModel()
 ) {
     val context = LocalContext.current
 
@@ -63,7 +63,7 @@ fun TapView(
 }
 
 @HiltViewModel
-class TapViewModel @Inject constructor(
+class LiveDevotionalRootViewModel @Inject constructor(
     private val recordTap: RecordTap
 ): ViewModel() {
     fun onTap(context: Context) {

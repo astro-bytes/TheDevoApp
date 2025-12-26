@@ -2,6 +2,7 @@ package com.astrobytes.thedevoapp.repositories.core
 
 import com.astrobytes.thedevoapp.models.Devotional
 import com.astrobytes.thedevoapp.repositories.CoreRepository
+import com.astrobytes.thedevoapp.repositories.DevotionalListRepository
 import com.astrobytes.thedevoapp.repositories.DevotionalRepository
 import com.astrobytes.thedevoapp.stores.DevotionalStore
 import kotlinx.coroutines.flow.update
@@ -21,5 +22,19 @@ class CoreDevotionalRepository @Inject constructor(
 
     override fun clear() {
         _value.update { null }
+    }
+}
+
+class CoreDevotionalListRepository @Inject constructor(
+    private val store: DevotionalStore
+): CoreRepository<List<Devotional>>(listOf()), DevotionalListRepository {
+    override suspend fun refresh(): List<Devotional> {
+        val devotionals = store.fetch()
+        _value.update { devotionals }
+        return devotionals
+    }
+
+    override fun clear() {
+        _value.update { listOf() }
     }
 }

@@ -13,6 +13,9 @@ import kotlin.time.Instant
 class SupabaseDevotionalStore @Inject constructor(
     private val client: SupabaseClient
 ): DevotionalStore {
+
+    private val table = "devotionals"
+
     @Serializable data class SupabaseDevotional @OptIn(ExperimentalTime::class) constructor(
         @SerialName("id") val id: Int,
         @SerialName("date_started") val startDate: Instant,
@@ -23,28 +26,19 @@ class SupabaseDevotionalStore @Inject constructor(
     }
 
     override suspend fun fetch(): List<Devotional> = client
-        .from("devotionals")
+        .from(table)
         .select()
         .decodeList<SupabaseDevotional>()
         .map { it.asDevotional() }
 
     @OptIn(ExperimentalTime::class)
     override suspend fun fetch(instant: Instant): Devotional? = client
-        .from("devotionals")
+        .from(table)
         .select {
             filter {
                 lte("date_started", instant)
                 gte("date_ended", instant)
             }
-            limit(1)
-        }
-        .decodeSingleOrNull<SupabaseDevotional>()
-        ?.asDevotional()
-
-    override suspend fun fetch(id: Int): Devotional? = client
-        .from("devotionals")
-        .select {
-            filter { eq("id", id) }
             limit(1)
         }
         .decodeSingleOrNull<SupabaseDevotional>()

@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.astrobytes.thedevoapp.ui.Information
 import com.astrobytes.thedevoapp.ui.activities.LiveDevotionalActivity
+import com.astrobytes.thedevoapp.ui.tabs.DevotionalsTab
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -105,7 +106,7 @@ fun TabView(
                         .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("Devotionals Screen")
+                    DevotionalsTab()
                 }
             }
         }

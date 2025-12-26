@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-@Composable fun AppRoot(
+@Composable fun AppRootView(
     modifier: Modifier = Modifier,
     model: AppRootViewModel = hiltViewModel()
 ) {
