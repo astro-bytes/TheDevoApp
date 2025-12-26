@@ -21,7 +21,7 @@ class SupabaseTapStore @Inject constructor(private val client: SupabaseClient): 
         constructor(tap: Tap) : this(tap.userId, tap.devotionalId, tap.timestamp)
     }
 
-    override suspend fun put(tap: Tap): Unit {
+    override suspend fun put(tap: Tap) {
         client.from("taps").insert(SupabaseTap(tap))
     }
 }

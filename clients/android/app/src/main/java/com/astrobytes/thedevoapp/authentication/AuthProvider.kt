@@ -84,7 +84,8 @@ class SupabaseAuthProvider @Inject constructor(
 
     override suspend fun login() {
         if (state.value == AuthState.NotAuthenticated) {
-            client.auth.signInAnonymously()
+            runCatching { client.auth.signInAnonymously() }
+                .onFailure { logout() }
         }
     }
 

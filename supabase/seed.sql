@@ -333,6 +333,39 @@ WHERE
     AND d.date_ended IS NOT NULL;
 
 -- =====================================================
+-- GENERATE LIVE DEVOTIONAL FOR TESTING (ONGOING)
+-- =====================================================
+-- Insert a single "live" devotional for testing
+INSERT INTO devotionals (
+    date_started,
+    date_ended,
+    prelude_music,
+    invocation,
+    opening_music,
+    scripture_id,
+    speaker_id,
+    closing_music,
+    benediction,
+    postlude_music,
+    summary,
+    transcript
+)
+VALUES (
+    '2000-01-01 00:00:00',
+    '9999-12-31 23:59:59',
+    'Prelude Hymn Test',
+    'Opening prayer for testing.',
+    'Opening Hymn Test',
+    (SELECT id FROM scriptures ORDER BY random() LIMIT 1),
+    (SELECT id FROM speakers ORDER BY random() LIMIT 1),
+    'Closing Hymn Test',
+    'Closing prayer for testing.',
+    'Postlude Hymn Test',
+    'Test devotional currently live.',
+    'This devotional is inserted for testing and is currently live.'
+);
+
+-- =====================================================
 -- GENERATE LOG EVENTS
 -- =====================================================
 

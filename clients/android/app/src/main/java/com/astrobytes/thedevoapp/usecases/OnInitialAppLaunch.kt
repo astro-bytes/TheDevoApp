@@ -3,9 +3,10 @@ package com.astrobytes.thedevoapp.usecases
 import android.content.Context
 import javax.inject.Inject
 import androidx.core.content.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
 
 class OnInitialAppLaunch @Inject constructor(
-    context: Context
+    @ApplicationContext private val context: Context
 ) {
     private val preferences = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
     companion object {
@@ -22,8 +23,7 @@ class OnInitialAppLaunch @Inject constructor(
 
     fun execute() {
         if (isInitialLaunch()) {
-            // TODO: Perform initial app launch actions
-            return
+            TODO("Not yet implemented")
         }
     }
 }

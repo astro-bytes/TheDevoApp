@@ -1,7 +1,7 @@
 package com.astrobytes.thedevoapp.repositories
 
 import androidx.annotation.CheckResult
-import androidx.compose.runtime.collectAsState
+import com.astrobytes.thedevoapp.models.Devotional
 import com.astrobytes.thedevoapp.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -9,8 +9,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.update
 
 /**
  * A read-only repository that exposes a stream of values and operations to
@@ -93,3 +91,4 @@ abstract class CoreRepository<Value>(initialValue: Value) : Repository<Value> {
 }
 
 interface UserRepository : Repository<User?>
+interface DevotionalRepository : Repository<Devotional?>
