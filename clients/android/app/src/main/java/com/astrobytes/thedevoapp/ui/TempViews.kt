@@ -28,6 +28,7 @@ import com.astrobytes.thedevoapp.authentication.AuthProvider
 import com.astrobytes.thedevoapp.authentication.AuthState
 import com.astrobytes.thedevoapp.models.User
 import com.astrobytes.thedevoapp.repositories.UserRepository
+import com.astrobytes.thedevoapp.ui.activities.LiveDevotionalActivity
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -71,7 +72,6 @@ class MainViewModel @Inject constructor() : ViewModel() {
         }
     }
 }
-
 
 @Composable
 fun Information(

@@ -1,4 +1,4 @@
-package com.astrobytes.thedevoapp.ui
+package com.astrobytes.thedevoapp.ui.composables
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -8,6 +8,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.astrobytes.thedevoapp.ui.MainView
 import com.astrobytes.thedevoapp.usecases.OnAppLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow

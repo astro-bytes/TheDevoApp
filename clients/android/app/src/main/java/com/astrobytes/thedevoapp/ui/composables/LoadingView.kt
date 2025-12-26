@@ -1,4 +1,4 @@
-package com.astrobytes.thedevoapp.ui
+package com.astrobytes.thedevoapp.ui.composables
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
