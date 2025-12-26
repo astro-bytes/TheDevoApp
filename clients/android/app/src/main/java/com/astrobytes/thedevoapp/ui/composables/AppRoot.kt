@@ -8,7 +8,6 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.astrobytes.thedevoapp.ui.MainView
 import com.astrobytes.thedevoapp.usecases.OnAppLaunch
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,15 +17,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @Composable fun AppRoot(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     model: AppRootViewModel = hiltViewModel()
 ) {
     val state by model.state.collectAsState()
 
     when (state) {
         is AppRootViewModel.AppState.Loading -> LoadingView(modifier)
-        is AppRootViewModel.AppState.Ready -> MainView(modifier)
-        is AppRootViewModel.AppState.Error -> Text((state as AppRootViewModel.AppState.Error).message, modifier = modifier)
+        is AppRootViewModel.AppState.Ready -> TabView(modifier)
+        is AppRootViewModel.AppState.Error -> Text((state as AppRootViewModel.AppState.Error).message, modifier)
     }
 }
 

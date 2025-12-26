@@ -1,4 +1,4 @@
-package com.astrobytes.thedevoapp.ui
+package com.astrobytes.thedevoapp.ui.composables
 
 import android.app.Activity
 import android.content.Context

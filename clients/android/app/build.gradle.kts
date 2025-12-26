@@ -102,4 +102,7 @@ dependencies {
 
     // Splashscreen
     implementation(libs.androidx.splashscreen)
+
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
 }

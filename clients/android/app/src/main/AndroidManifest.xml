@@ -17,9 +17,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TheDevoApp.Splash">
 
-        <activity android:name=".ui.LiveDevotionalActivity" />
+        <activity android:name=".ui.activities.LiveDevotionalActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.activities.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.TheDevoApp">
             <intent-filter>
