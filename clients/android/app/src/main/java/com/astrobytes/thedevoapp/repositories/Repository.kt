@@ -91,5 +91,6 @@ abstract class CoreRepository<Value>(initialValue: Value) : Repository<Value> {
 }
 
 interface UserRepository : Repository<User?>
-interface DevotionalRepository : Repository<Devotional?>
+interface LiveDevotionalRepository: Repository<Devotional?>
 interface DevotionalListRepository : Repository<List<Devotional>>
+interface DevotionalRepository : Repository<Devotional?>

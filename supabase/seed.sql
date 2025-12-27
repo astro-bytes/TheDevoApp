@@ -2,7 +2,7 @@
 -- GENERATE SPEAKERS
 -- =====================================================
 
-INSERT INTO speakers (first_name, middle_initial, last_name, profession)
+INSERT INTO people (first_name, middle_initial, last_name)
 SELECT
     -- First names (cycled)
     (ARRAY[
@@ -22,13 +22,7 @@ SELECT
         'Smith','Johnson','Brown','Taylor','Anderson','Thomas','Jackson','White',
         'Harris','Martin','Thompson','Garcia','Martinez','Robinson','Clark',
         'Rodriguez','Lewis','Lee','Walker','Hall'
-    ])[((g - 1) % 20) + 1] AS last_name,
-
-    -- Professions (cycled)
-    (ARRAY[
-        'Professor','Engineer','Teacher','Researcher','Minister','Author',
-        'Scientist','Developer','Designer','Analyst'
-    ])[((g - 1) % 10) + 1] AS profession
+    ])[((g - 1) % 20) + 1] AS last_name
 
 FROM generate_series(1, 500) AS g;
 
@@ -36,57 +30,49 @@ FROM generate_series(1, 500) AS g;
 -- GENERATE SCRIPTURES
 -- =====================================================
 
-INSERT INTO scriptures (book, chapter, verses, url)
+INSERT INTO scriptures (reader_id, book, chapter, verses, url)
 SELECT
-    book,
-    chapter,
-    verses,
-    url
-FROM (
-    SELECT
-        g,
+    -- Assign a random reader from people
+    p.id AS reader_id,
+    
+    -- Rotate through standard works
+    CASE (g % 4)
+        WHEN 0 THEN 'Genesis'
+        WHEN 1 THEN '1 Nephi'
+        WHEN 2 THEN 'Doctrine and Covenants'
+        ELSE 'Moses'
+    END AS book,
+    
+    -- Chapter / section
+    CASE (g % 4)
+        WHEN 0 THEN ((g % 50) + 1)::TEXT                     -- Genesis 1–50
+        WHEN 1 THEN ((g % 22) + 1)::TEXT                     -- 1 Nephi 1–22
+        WHEN 2 THEN ((g % 138) + 1)::TEXT                    -- D&C 1–138
+        ELSE ((g % 8) + 1)::TEXT                             -- Moses 1–8
+    END AS chapter,
+    
+    -- Verses: JSONB integer array
+    CASE
+        WHEN g % 3 = 0 THEN jsonb_build_array(1)
+        WHEN g % 3 = 1 THEN jsonb_build_array(1, 2)
+        ELSE jsonb_build_array(1, 2, 3)
+    END AS verses,
+    
+    -- Scripture URL
+    CASE (g % 4)
+        WHEN 0 THEN 'https://www.churchofjesuschrist.org/study/scriptures/ot/gen/' || ((g % 50) + 1)
+        WHEN 1 THEN 'https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/' || ((g % 22) + 1)
+        WHEN 2 THEN 'https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/' || ((g % 138) + 1)
+        ELSE 'https://www.churchofjesuschrist.org/study/scriptures/pgp/moses/' || ((g % 8) + 1)
+    END AS url
+FROM generate_series(1, 500) AS g
+JOIN LATERAL (
+    SELECT id
+    FROM people
+    ORDER BY random()
+    LIMIT 1
+) p ON true;
 
-        -- Rotate through standard works
-        CASE (g % 4)
-            WHEN 0 THEN 'Genesis'
-            WHEN 1 THEN '1 Nephi'
-            WHEN 2 THEN 'Doctrine and Covenants'
-            ELSE 'Moses'
-        END AS book,
-
-        -- Chapter / section
-        CASE (g % 4)
-            WHEN 0 THEN ((g % 50) + 1)::TEXT                     -- Genesis 1–50
-            WHEN 1 THEN ((g % 22) + 1)::TEXT                     -- 1 Nephi 1–22
-            WHEN 2 THEN ((g % 138) + 1)::TEXT                    -- D&C 1–138
-            ELSE ((g % 8) + 1)::TEXT                             -- Moses 1–8
-        END AS chapter,
-
-        -- Verses: always a JSONB integer array
-        CASE
-            WHEN g % 3 = 0 THEN jsonb_build_array(1)
-            WHEN g % 3 = 1 THEN jsonb_build_array(1, 2)
-            ELSE jsonb_build_array(1, 2, 3)
-        END AS verses,
-
-        -- LDS scripture URLs
-        CASE (g % 4)
-            WHEN 0 THEN
-                'https://www.churchofjesuschrist.org/study/scriptures/ot/gen/'
-                || ((g % 50) + 1)
-            WHEN 1 THEN
-                'https://www.churchofjesuschrist.org/study/scriptures/bofm/1-ne/'
-                || ((g % 22) + 1)
-            WHEN 2 THEN
-                'https://www.churchofjesuschrist.org/study/scriptures/dc-testament/dc/'
-                || ((g % 138) + 1)
-            ELSE
-                'https://www.churchofjesuschrist.org/study/scriptures/pgp/moses/'
-                || ((g % 8) + 1)
-        END AS url
-
-    FROM generate_series(1, 500) AS g
-) s;
 
 -- =====================================================
 -- GENERATE TOPICS
@@ -125,21 +111,57 @@ INSERT INTO topics (name) VALUES
 ('Building Zion');
 
 -- =====================================================
+-- GENERATE MUSIC (dynamic)
+-- =====================================================
+INSERT INTO music (title, composer, arranger, url)
+SELECT
+    -- Hymn title
+    'Hymn ' || g AS title,
+
+    -- Composer: randomly assigned from a small set or NULL
+    CASE
+        WHEN random() < 0.7 THEN
+            (ARRAY['Charles Wesley','Fanny J. Crosby','John Newton','Isaac Watts','L. L. Manson'])[floor(random()*5+1)]
+        ELSE NULL
+    END AS composer,
+
+    -- Arranger: randomly assigned from a small set or NULL
+    CASE
+        WHEN random() < 0.6 THEN
+            (ARRAY['John Doe','Jane Smith','Albert Johnson','Mary Clark','Samuel Lee'])[floor(random()*5+1)]
+        ELSE NULL
+    END AS arranger,
+
+    -- URL: sometimes NULL, sometimes a fake link
+    CASE
+        WHEN random() < 0.5 THEN
+            'https://example.com/hymn/' || g
+        ELSE NULL
+    END AS url
+FROM generate_series(1, 350) AS g;
+
+-- =====================================================
+-- GENERATE PERFORMANCES
+-- =====================================================
+
+INSERT INTO performances (music_id, performer_id)
+SELECT
+    (SELECT id FROM music ORDER BY random() LIMIT 1),
+    (SELECT id FROM people ORDER BY random() LIMIT 1)
+FROM generate_series(1, 1000);
+
+-- =====================================================
 -- GENERATE DEVOTIONALS
 -- =====================================================
 
 WITH base_tuesday AS (
-    -- Most recent Tuesday at 11:30 AM
     SELECT
         date_trunc('week', now()) + interval '1 day 11 hours 30 minutes' AS tuesday_1130
 ),
 series AS (
     SELECT
         gs.n,
-        CASE
-            WHEN gs.n < 250 THEN 'past'
-            ELSE 'future'
-        END AS timing,
+        CASE WHEN gs.n < 250 THEN 'past' ELSE 'future' END AS timing,
         CASE
             WHEN gs.n < 250
                 THEN b.tuesday_1130 - (gs.n * interval '7 days')
@@ -151,60 +173,56 @@ series AS (
 )
 INSERT INTO devotionals (
     date_started,
-    prelude_music,
-    invocation,
-    opening_music,
+    prelude_id,
+    invocation_id,
+    introit_id,
     scripture_id,
     speaker_id,
-    closing_music,
-    benediction,
-    postlude_music,
+    postlude_id,
+    benediction_id,
+    recessional_id,
     date_ended,
+    title,
     summary,
-    transcript
+    transcript,
+    url
 )
 SELECT
-    s.start_time AS date_started,
+    s.start_time,
 
-    -- Past devotionals only
-    CASE WHEN s.timing = 'past' THEN 'Prelude Hymn ' || (random() * 300)::int END,
-    CASE WHEN s.timing = 'past' THEN 'Opening prayer offered with reverence.' END,
-    CASE WHEN s.timing = 'past' THEN 'Opening Hymn ' || (random() * 300)::int END,
+    -- Music (performances)
+    CASE WHEN s.timing = 'past' THEN (SELECT id FROM performances ORDER BY random() LIMIT 1) END,
+    CASE WHEN s.timing = 'past' THEN (SELECT id FROM people ORDER BY random() LIMIT 1) END,
+    CASE WHEN s.timing = 'past' THEN (SELECT id FROM performances ORDER BY random() LIMIT 1) END,
 
-    -- Random scripture
-    (
-        SELECT id
-        FROM scriptures
-        ORDER BY random()
-        LIMIT 1
-    ) AS scripture_id,
+    -- Scripture & speaker
+    (SELECT id FROM scriptures ORDER BY random() LIMIT 1),
+    (SELECT id FROM people ORDER BY random() LIMIT 1),
 
-    -- Random speaker
-    (
-        SELECT id
-        FROM speakers
-        ORDER BY random()
-        LIMIT 1
-    ) AS speaker_id,
+    CASE WHEN s.timing = 'past' THEN (SELECT id FROM performances ORDER BY random() LIMIT 1) END,
+    CASE WHEN s.timing = 'past' THEN (SELECT id FROM people ORDER BY random() LIMIT 1) END,
+    CASE WHEN s.timing = 'past' THEN (SELECT id FROM performances ORDER BY random() LIMIT 1) END,
 
-    CASE WHEN s.timing = 'past' THEN 'Closing Hymn ' || (random() * 300)::int END,
-    CASE WHEN s.timing = 'past' THEN 'Closing prayer offered in gratitude.' END,
-    CASE WHEN s.timing = 'past' THEN 'Postlude Hymn ' || (random() * 300)::int END,
+    -- End time
+    s.start_time + interval '1 hour',
 
-    -- Always exactly one hour later
-    s.start_time + interval '1 hour' AS date_ended,
+    -- Title
+    'Tuesday Devotional on Faith and Discipleship',
 
+    -- Summary
     CASE
-        WHEN s.timing = 'past' THEN
-            'A Tuesday devotional focused on faith, discipleship, and living the gospel of Jesus Christ.'
-    END AS summary,
+        WHEN s.timing = 'past'
+        THEN 'A devotional focused on faith, testimony, and living the gospel of Jesus Christ.'
+    END,
 
+    -- Transcript
     CASE
-        WHEN s.timing = 'past' THEN
-            'The speaker shared insights from scripture, bore testimony of Jesus Christ, '
-            || 'and encouraged faithful living through prayer, service, and obedience.'
-    END AS transcript
+        WHEN s.timing = 'past'
+        THEN 'The speaker shared insights from scripture, bore testimony of Jesus Christ, '
+             || 'and encouraged faithful living through prayer, service, and obedience.'
+    END,
 
+    NULL
 FROM series s;
 
 -- =====================================================
@@ -335,34 +353,42 @@ WHERE
 -- =====================================================
 -- GENERATE LIVE DEVOTIONAL FOR TESTING (ONGOING)
 -- =====================================================
--- Insert a single "live" devotional for testing
+
 INSERT INTO devotionals (
     date_started,
     date_ended,
-    prelude_music,
-    invocation,
-    opening_music,
+    prelude_id,
+    invocation_id,
+    introit_id,
     scripture_id,
     speaker_id,
-    closing_music,
-    benediction,
-    postlude_music,
+    postlude_id,
+    benediction_id,
+    recessional_id,
+    title,
     summary,
-    transcript
+    transcript,
+    url
 )
 VALUES (
     '2000-01-01 00:00:00',
     '9999-12-31 23:59:59',
-    'Prelude Hymn Test',
-    'Opening prayer for testing.',
-    'Opening Hymn Test',
+
+    (SELECT id FROM performances ORDER BY random() LIMIT 1),
+    (SELECT id FROM people ORDER BY random() LIMIT 1),
+    (SELECT id FROM performances ORDER BY random() LIMIT 1),
+
     (SELECT id FROM scriptures ORDER BY random() LIMIT 1),
-    (SELECT id FROM speakers ORDER BY random() LIMIT 1),
-    'Closing Hymn Test',
-    'Closing prayer for testing.',
-    'Postlude Hymn Test',
-    'Test devotional currently live.',
-    'This devotional is inserted for testing and is currently live.'
+    (SELECT id FROM people ORDER BY random() LIMIT 1),
+
+    (SELECT id FROM performances ORDER BY random() LIMIT 1),
+    (SELECT id FROM people ORDER BY random() LIMIT 1),
+    (SELECT id FROM performances ORDER BY random() LIMIT 1),
+
+    'Live Test Devotional',
+    'This devotional is currently live for testing purposes.',
+    'This is a continuously active devotional used for development and testing.',
+    NULL
 );
 
 -- =====================================================

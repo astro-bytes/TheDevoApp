@@ -22,12 +22,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.astrobytes.thedevoapp.ui.Information
 import com.astrobytes.thedevoapp.ui.activities.LiveDevotionalActivity
-import com.astrobytes.thedevoapp.ui.tabs.DevotionalsTab
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -106,8 +107,18 @@ fun TabView(
                         .padding(innerPadding),
                     contentAlignment = Alignment.Center
                 ) {
-                    DevotionalsTab()
+                    DevotionalsTabView({
+                        navController.navigate("devotional/${it.id}")
+                    })
                 }
+            }
+
+            composable(
+                route = "devotional/{id}",
+                arguments = listOf(navArgument("id") { type = NavType.IntType })
+            ) { backStackEntry ->
+                val id = backStackEntry.arguments?.getInt("id")
+                id?.let { DevotionalDetailView() }
             }
         }
     }
@@ -118,7 +129,7 @@ class TabViewModel @Inject constructor() : ViewModel() {
     private val _openLiveDevotional = MutableSharedFlow<Unit>()
     val openLiveDevotional: SharedFlow<Unit> = _openLiveDevotional
     val tabs = listOf("Testing", "Devotionals")
-    val selectedTab: MutableState<Int> = mutableIntStateOf(0)
+    val selectedTab: MutableState<Int> = mutableIntStateOf(1)
 
     fun onOpenLiveDevotional() {
         viewModelScope.launch {

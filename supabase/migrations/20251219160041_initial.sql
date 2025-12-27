@@ -1,12 +1,11 @@
 -- =============================================================
 -- SPEAKERS
 -- =============================================================
-CREATE TABLE speakers (
+CREATE TABLE people (
     id SERIAL PRIMARY KEY,
     first_name TEXT NOT NULL,
     middle_initial TEXT,
-    last_name TEXT NOT NULL,
-    profession TEXT
+    last_name TEXT NOT NULL
 );
 
 -- =============================================================
@@ -14,39 +13,103 @@ CREATE TABLE speakers (
 -- =============================================================
 CREATE TABLE scriptures (
     id SERIAL PRIMARY KEY,
+    reader_id INTEGER NOT NULL,
     book TEXT NOT NULL,
     chapter TEXT NOT NULL,
     verses JSONB NOT NULL, -- JSONB array of integers
+    url TEXT,
+
+    FOREIGN KEY (reader_id)
+        REFERENCES people (id)
+        ON DELETE RESTRICT
+);
+
+-- =============================================================
+-- MUSIC
+-- =============================================================
+CREATE TABLE music (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    composer TEXT,
+    arranger TEXT,
     url TEXT
 );
 
+-- =============================================================
+-- PERFORMANCES
+-- =============================================================
+CREATE TABLE performances (
+    id SERIAL PRIMARY KEY,
+    music_id INTEGER NOT NULL,
+    performer_id INTEGER NOT NULL,
+
+    FOREIGN KEY (music_id)
+        REFERENCES music (id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (performer_id)
+        REFERENCES people (id)
+        ON DELETE RESTRICT
+);
 -- =============================================================
 -- DEVOTIONALS
 -- =============================================================
 CREATE TABLE devotionals (
     id SERIAL PRIMARY KEY,
     date_started TIMESTAMPTZ NOT NULL,
-    prelude_music TEXT,
-    invocation TEXT,
-    opening_music TEXT,
+    prelude_id INTEGER,
+    invocation_id INTEGER,
+    introit_id INTEGER,
     scripture_id INTEGER,
     speaker_id INTEGER NOT NULL,
-    closing_music TEXT,
-    benediction TEXT,
-    postlude_music TEXT,
-    date_ended TIMESTAMPTZ,
+    postlude_id INTEGER,
+    benediction_id INTEGER,
+    recessional_id INTEGER,
+    date_ended TIMESTAMPTZ NOT NULL,
+    title TEXT NOT NULL,
     summary TEXT,
     transcript TEXT,
+    url TEXT,
+
+    CONSTRAINT fk_devotional_prelude_performance
+        FOREIGN KEY (prelude_id)
+        REFERENCES performances (id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_devotional_invocation
+        FOREIGN KEY (invocation_id)
+        REFERENCES people (id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_devotional_introit
+        FOREIGN KEY (introit_id)
+        REFERENCES performances (id)
+        ON DELETE SET NULL,
 
     CONSTRAINT fk_devotional_scripture
         FOREIGN KEY (scripture_id)
         REFERENCES scriptures (id)
-        ON DELETE RESTRICT,
+        ON DELETE SET NULL,
 
     CONSTRAINT fk_devotional_speaker
         FOREIGN KEY (speaker_id)
-        REFERENCES speakers (id)
-        ON DELETE RESTRICT
+        REFERENCES people (id)
+        ON DELETE RESTRICT,
+
+    CONSTRAINT fk_devotional_postlude_performance
+        FOREIGN KEY (postlude_id)
+        REFERENCES performances (id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_devotional_benediction
+        FOREIGN KEY (benediction_id)
+        REFERENCES people (id)
+        ON DELETE SET NULL,
+
+    CONSTRAINT fk_devotional_recessional_performance
+        FOREIGN KEY (recessional_id)
+        REFERENCES performances (id)
+        ON DELETE SET NULL
 );
 
 -- =============================================================
@@ -170,8 +233,10 @@ CREATE INDEX idx_log_errors_log_event_id ON log_errors (log_event_id);
 -- =============================================================
 -- ENABLE RLS
 -- =============================================================
-ALTER TABLE speakers ENABLE ROW LEVEL SECURITY;
+ALTER TABLE people ENABLE ROW LEVEL SECURITY;
 ALTER TABLE scriptures ENABLE ROW LEVEL SECURITY;
+ALTER TABLE music ENABLE ROW LEVEL SECURITY;
+ALTER TABLE performances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE devotionals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE topics ENABLE ROW LEVEL SECURITY;
 ALTER TABLE devotional_topics ENABLE ROW LEVEL SECURITY;
@@ -209,26 +274,72 @@ ON devotionals FOR DELETE
 USING ((SELECT auth.role()) = 'service_role');
 
 -- =========================
--- SPEAKERS
+-- PEOPLE
 -- =========================
 
-CREATE POLICY speakers_read
-ON speakers FOR SELECT
+CREATE POLICY people_read
+ON people FOR SELECT
 USING (
     (SELECT auth.role()) IN ('authenticated', 'service_role')
 );
 
-CREATE POLICY speakers_insert
-ON speakers FOR INSERT
+CREATE POLICY people_insert
+ON people FOR INSERT
 WITH CHECK ((SELECT auth.role()) = 'service_role');
 
-CREATE POLICY speakers_update
-ON speakers FOR UPDATE
+CREATE POLICY people_update
+ON people FOR UPDATE
 USING ((SELECT auth.role()) = 'service_role')
 WITH CHECK ((SELECT auth.role()) = 'service_role');
 
-CREATE POLICY speakers_delete
-ON speakers FOR DELETE
+CREATE POLICY people_delete
+ON people FOR DELETE
+USING ((SELECT auth.role()) = 'service_role');
+
+-- =========================
+-- MUSIC
+-- =========================
+
+ALTER TABLE music ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY music_read
+ON music FOR SELECT
+USING ((SELECT auth.role()) IN ('authenticated', 'service_role'));
+
+CREATE POLICY music_insert
+ON music FOR INSERT
+WITH CHECK ((SELECT auth.role()) = 'service_role');
+
+CREATE POLICY music_update
+ON music FOR UPDATE
+USING ((SELECT auth.role()) = 'service_role')
+WITH CHECK ((SELECT auth.role()) = 'service_role');
+
+CREATE POLICY music_delete
+ON music FOR DELETE
+USING ((SELECT auth.role()) = 'service_role');
+
+-- =========================
+-- PERFORMANCES
+-- =========================
+
+ALTER TABLE performances ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY performances_read
+ON performances FOR SELECT
+USING ((SELECT auth.role()) IN ('authenticated', 'service_role'));
+
+CREATE POLICY performances_insert
+ON performances FOR INSERT
+WITH CHECK ((SELECT auth.role()) = 'service_role');
+
+CREATE POLICY performances_update
+ON performances FOR UPDATE
+USING ((SELECT auth.role()) = 'service_role')
+WITH CHECK ((SELECT auth.role()) = 'service_role');
+
+CREATE POLICY performances_delete
+ON performances FOR DELETE
 USING ((SELECT auth.role()) = 'service_role');
 
 -- =========================
