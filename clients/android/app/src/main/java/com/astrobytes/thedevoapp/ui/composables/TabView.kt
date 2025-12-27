@@ -129,7 +129,7 @@ class TabViewModel @Inject constructor() : ViewModel() {
     private val _openLiveDevotional = MutableSharedFlow<Unit>()
     val openLiveDevotional: SharedFlow<Unit> = _openLiveDevotional
     val tabs = listOf("Testing", "Devotionals")
-    val selectedTab: MutableState<Int> = mutableIntStateOf(1)
+    val selectedTab: MutableState<Int> = mutableIntStateOf(0)
 
     fun onOpenLiveDevotional() {
         viewModelScope.launch {
