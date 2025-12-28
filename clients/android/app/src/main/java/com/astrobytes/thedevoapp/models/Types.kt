@@ -57,6 +57,8 @@ data class Person(
 }
 
 data class Quote(
+    val id: Int,
+    val devotionalId: Int,
     val likes: Int,
     val taps: Int,
     val text: String

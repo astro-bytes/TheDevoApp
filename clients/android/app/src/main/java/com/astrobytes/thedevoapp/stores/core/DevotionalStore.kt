@@ -89,11 +89,13 @@ class SupabaseDevotionalStore @Inject constructor(
     }
 
     @Serializable data class SupabaseQuote(
+        val id: Int,
+        val devotionalId: Int,
         val likes: Int,
         val taps: Int,
         val text: String
     ) {
-        fun asQuote(): Quote = Quote(likes, taps, text)
+        fun asQuote(): Quote = Quote(id, devotionalId, likes, taps, text)
     }
 
     override suspend fun fetch(): List<Devotional> = client

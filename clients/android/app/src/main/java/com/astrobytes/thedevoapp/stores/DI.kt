@@ -1,6 +1,7 @@
 package com.astrobytes.thedevoapp.stores
 
 import com.astrobytes.thedevoapp.stores.core.SupabaseDevotionalStore
+import com.astrobytes.thedevoapp.stores.core.SupabaseQuoteStore
 import com.astrobytes.thedevoapp.stores.core.SupabaseTapStore
 import com.astrobytes.thedevoapp.stores.core.SupabaseUserStore
 import dagger.Binds
@@ -19,4 +20,7 @@ abstract class StoreModule {
 
     @Binds
     abstract fun bindDevotionalStore(impl: SupabaseDevotionalStore): DevotionalStore
+
+    @Binds
+    abstract fun bindQuoteStore(impl: SupabaseQuoteStore): QuoteStore
 }

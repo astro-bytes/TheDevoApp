@@ -3,6 +3,7 @@ package com.astrobytes.thedevoapp.repositories
 import com.astrobytes.thedevoapp.repositories.core.CoreDevotionalListRepository
 import com.astrobytes.thedevoapp.repositories.core.CoreDevotionalRepository
 import com.astrobytes.thedevoapp.repositories.core.CoreLiveDevotionalRepository
+import com.astrobytes.thedevoapp.repositories.core.CoreQuoteListRepository
 import com.astrobytes.thedevoapp.repositories.core.CoreUserRepository
 import dagger.Binds
 import dagger.Module
@@ -27,6 +28,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindDevotionalListRepository(impl: CoreDevotionalListRepository): DevotionalListRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindQuoteListRepository(impl: CoreQuoteListRepository): QuoteListRepository
 }
 
 @AssistedFactory

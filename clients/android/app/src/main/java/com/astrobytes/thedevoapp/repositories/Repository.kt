@@ -2,6 +2,7 @@ package com.astrobytes.thedevoapp.repositories
 
 import androidx.annotation.CheckResult
 import com.astrobytes.thedevoapp.models.Devotional
+import com.astrobytes.thedevoapp.models.Quote
 import com.astrobytes.thedevoapp.models.User
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,3 +95,4 @@ interface UserRepository : Repository<User?>
 interface LiveDevotionalRepository: Repository<Devotional?>
 interface DevotionalListRepository : Repository<List<Devotional>>
 interface DevotionalRepository : Repository<Devotional?>
+interface QuoteListRepository : Repository<List<Quote>>

@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class TabRoute(val route: String) {
-    object Testing : TabRoute("testing")
+    object Quotes : TabRoute("quotes")
     object Devotionals : TabRoute("devotionals")
 }
 
@@ -70,7 +70,7 @@ fun TabView(
 
                             navController.navigate(
                                 when (index) {
-                                    0 -> TabRoute.Testing.route
+                                    0 -> TabRoute.Quotes.route
                                     else -> TabRoute.Devotionals.route
                                 }
                             ) {
@@ -87,16 +87,13 @@ fun TabView(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = TabRoute.Testing.route
+            startDestination = TabRoute.Quotes.route
         ) {
-            composable(TabRoute.Testing.route) {
+            composable(TabRoute.Quotes.route) {
                 Box(modifier.padding(innerPadding)) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Information()
-                        Button(onClick = model::onOpenLiveDevotional) {
-                            Text("Open Live Devotional")
-                        }
-                    }
+                    QuotesTab({
+                        navController.navigate("devotional/${it.devotionalId}")
+                    })
                 }
             }
 
@@ -128,7 +125,7 @@ fun TabView(
 class TabViewModel @Inject constructor() : ViewModel() {
     private val _openLiveDevotional = MutableSharedFlow<Unit>()
     val openLiveDevotional: SharedFlow<Unit> = _openLiveDevotional
-    val tabs = listOf("Testing", "Devotionals")
+    val tabs = listOf("Quotes", "Devotionals")
     val selectedTab: MutableState<Int> = mutableIntStateOf(0)
 
     fun onOpenLiveDevotional() {

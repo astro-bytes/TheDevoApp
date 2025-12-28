@@ -109,19 +109,7 @@ fun DevotionalDetailView(
                     SectionHeader("Quotes")
                 }
                 items(quotes) { quote ->
-                    Card {
-                        Column(Modifier.padding(16.dp)) {
-                            Text(
-                                text = "“${quote.text}”",
-                                style = MaterialTheme.typography.bodyLarge
-                            )
-                            Spacer(Modifier.height(4.dp))
-                            Text(
-                                text = "❤️ ${quote.likes}   👆 ${quote.taps}",
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
+                    QuoteView(quote)
                 }
             }
 

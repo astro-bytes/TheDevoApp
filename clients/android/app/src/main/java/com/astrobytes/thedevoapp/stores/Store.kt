@@ -1,6 +1,7 @@
 package com.astrobytes.thedevoapp.stores
 
 import com.astrobytes.thedevoapp.models.Devotional
+import com.astrobytes.thedevoapp.models.Quote
 import com.astrobytes.thedevoapp.models.Tap
 import com.astrobytes.thedevoapp.models.User
 import kotlin.time.ExperimentalTime
@@ -20,4 +21,8 @@ interface DevotionalStore {
 
     suspend fun fetch(id: Int): Devotional?
     suspend fun fetch(): List<Devotional>
+}
+
+interface QuoteStore {
+    suspend fun fetch(): List<Quote>
 }

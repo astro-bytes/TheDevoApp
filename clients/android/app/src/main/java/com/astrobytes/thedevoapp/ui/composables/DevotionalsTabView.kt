@@ -18,8 +18,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -27,7 +28,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.astrobytes.thedevoapp.models.Devotional
-import com.astrobytes.thedevoapp.repositories.core.CoreDevotionalListRepository
+import com.astrobytes.thedevoapp.models.ViewState
+import com.astrobytes.thedevoapp.repositories.DevotionalListRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -38,33 +40,54 @@ fun DevotionalsTabView(
     modifier: Modifier = Modifier,
     model: DevotionalsTabViewModel = hiltViewModel()
 ) {
-    val devotionals by model.devotionals.collectAsState(listOf())
+    val state by model.state
 
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(devotionals) { devotional ->
-            DevotionalListItem(devotional, {
-                onSelection(devotional)
-            })
+    when (val s = state) {
+        ViewState.Loading -> {
+            LoadingView()
+        }
+
+        is ViewState.Ready -> {
+            LazyColumn(
+                modifier = modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(s.data, key = { it.id }) {
+                    DevotionalListItem(it, onClick = { onSelection(it) })
+                }
+            }
+        }
+
+        is ViewState.Error -> {
+            Text(s.message)
         }
     }
 }
 
 @HiltViewModel
 class DevotionalsTabViewModel @Inject constructor(
-    private val devotionalListRepository: CoreDevotionalListRepository
+    private val devotionalListRepository: DevotionalListRepository
 ) : ViewModel() {
 
-    val devotionals = devotionalListRepository.value
+    val state: MutableState<ViewState<List<Devotional>>> = mutableStateOf(ViewState.Loading)
 
-    init { refresh() }
-    // Optionally, expose a refresh function
+    init {
+        listenToDevotionals()
+        refresh()
+    }
+
     fun refresh() {
         viewModelScope.launch {
             devotionalListRepository.refresh()
+        }
+    }
+
+    private fun listenToDevotionals() {
+        viewModelScope.launch {
+            devotionalListRepository.value.collect { devotionals ->
+                state.value = ViewState.Ready(devotionals)
+            }
         }
     }
 }
